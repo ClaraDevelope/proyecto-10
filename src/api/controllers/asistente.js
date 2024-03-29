@@ -12,25 +12,6 @@ const getAsistentes = async (req, res, next) => {
   }
 }
 
-// const getAsistentes = async (req, res, next) => {
-//   try {
-//     let usuariosAsistentes = null
-
-//     const asistentes = await Asistente.find().populate('asistencia')
-
-//     if (req.usuario) {
-//       usuariosAsistentes = await Usuario.find({
-//         _id: { $in: asistentes.map((asistente) => asistente._id) }
-//       }).populate('eventosAsistencia')
-//     }
-
-//     return res.status(200).json({ asistentes, usuariosAsistentes })
-//   } catch (error) {
-//     console.error(error)
-//     return res.status(400).json('Error al obtener los asistentes')
-//   }
-// }
-
 const getAsistenteById = async (req, res, next) => {
   try {
     const { id } = req.params

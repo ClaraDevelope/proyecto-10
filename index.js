@@ -1,10 +1,12 @@
 require('dotenv').config()
 const express = require('express')
+const cors = require('cors')
 const { connectDB } = require('./src/config/db')
 const { mainRouter } = require('./src/api/routes/mainrouter')
 const cloudinary = require('cloudinary').v2
 
 const app = express()
+app.use(cors())
 const PORT = 7070
 connectDB()
 cloudinary.config({
