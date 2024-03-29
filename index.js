@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const { connectDB } = require('./src/config/db')
-const { mainRouter } = require('./src/api/routes/mainrouter')
+const { mainRouter } = require('./src/api/routes/mainRouter')
 const cloudinary = require('cloudinary').v2
 
 const app = express()
@@ -14,7 +14,6 @@ cloudinary.config({
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET
 })
-// app.use(express.urlencoded({ extended: true, encoding: 'utf-8' }))
 
 app.use(express.json())
 
