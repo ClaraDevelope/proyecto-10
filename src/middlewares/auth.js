@@ -2,7 +2,7 @@ const Evento = require('../api/models/evento')
 const Usuario = require('../api/models/usuario')
 const { verificarLlave } = require('../utils/jwt')
 
-const isAuth = async (req, res, next) => {
+const verificarToken = async (req, res, next) => {
   try {
     const token = req.headers.authorization
     const parsedToken = token.replace('Bearer ', '')
@@ -10,7 +10,10 @@ const isAuth = async (req, res, next) => {
     const { id } = verificarLlave(parsedToken)
     const usuario = await Usuario.findById(id)
 
-    usuario.password = null
+    if (!usuario) {
+      throw new Error('Usuario no encontrado')
+    }
+
     req.usuario = usuario
     next()
   } catch (error) {
@@ -18,22 +21,31 @@ const isAuth = async (req, res, next) => {
   }
 }
 
-const isCreator = async (req, res, next) => {
+const isAuth = async (req, res, next) => {
   try {
-    const eventoId = req.params.id
-    const userId = req.params.userId
-    const evento = await Evento.findById(eventoId)
-    try {
-      if (!evento || evento.creador._id.toString() !== userId) {
-        throw new Error('No eres el creador del evento')
-      }
-      next()
-    } catch (error) {
-      return res.status(400).json({ error: error.message })
-    }
+    await verificarToken(req, res, next)
   } catch (error) {
     console.error(error)
-    return res.status(400).json({ error: 'No puedes modificar el evento' })
+    return res.status(400).json({ error: 'No estás autorizado' })
+  }
+}
+
+const isCreator = async (req, res, next) => {
+  try {
+    await verificarToken(req, res, async () => {
+      const usuario = req.usuario
+      const eventoId = req.params.id
+      const evento = await Evento.findById(eventoId)
+
+      if (!evento || evento.creador.toString() !== usuario._id.toString()) {
+        throw new Error('No eres el creador del evento')
+      }
+
+      next()
+    })
+  } catch (error) {
+    console.error(error)
+    return res.status(400).json({ error: error.message })
   }
 }
 

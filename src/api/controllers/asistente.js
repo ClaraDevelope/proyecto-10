@@ -1,7 +1,6 @@
 const Asistente = require('../models/asistente')
 const Evento = require('../models/evento')
 const Usuario = require('../models/usuario')
-const { updateEvento } = require('./evento')
 
 const getAsistentes = async (req, res, next) => {
   try {
@@ -12,6 +11,26 @@ const getAsistentes = async (req, res, next) => {
     return res.status(400).json('Error al hacer el get de los eventos')
   }
 }
+
+// const getAsistentes = async (req, res, next) => {
+//   try {
+//     let usuariosAsistentes = null
+
+//     const asistentes = await Asistente.find().populate('asistencia')
+
+//     if (req.usuario) {
+//       usuariosAsistentes = await Usuario.find({
+//         _id: { $in: asistentes.map((asistente) => asistente._id) }
+//       }).populate('eventosAsistencia')
+//     }
+
+//     return res.status(200).json({ asistentes, usuariosAsistentes })
+//   } catch (error) {
+//     console.error(error)
+//     return res.status(400).json('Error al obtener los asistentes')
+//   }
+// }
+
 const getAsistenteById = async (req, res, next) => {
   try {
     const { id } = req.params
@@ -44,21 +63,27 @@ const registroAsistencia = async (req, res, next) => {
     try {
       nuevoAsistente = new Asistente({ nombre, email, asistencia: eventoId })
       await nuevoAsistente.save()
-      if (req.usuario) {
-        await Usuario.findByIdAndUpdate(req.usuario._id, {
-          $push: { eventosAsistencia: nuevoAsistente._id }
-        })
-      }
+
       await Evento.findByIdAndUpdate(eventoId, {
         $push: { asistentes: nuevoAsistente._id }
       })
+
+      if (req.usuario) {
+        await Evento.findByIdAndUpdate(eventoId, {
+          $push: { asistentes: req.usuario._id }
+        })
+      }
+      if (req.usuario) {
+        await Usuario.findByIdAndUpdate(req.usuario._id, {
+          $push: { eventosAsistencia: eventoId }
+        })
+      }
     } catch (error) {
       console.error(error)
       return res
         .status(500)
         .json({ mensaje: 'Error al confirmar la asistencia' })
     }
-
     return res
       .status(200)
       .json({ mensaje: 'Asistencia confirmada con éxito', nuevoAsistente })
