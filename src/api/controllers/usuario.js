@@ -103,16 +103,15 @@ const updateUsuarios = async (req, res, next) => {
   }
 }
 
-const checkSession = async (req, res, next) => {
-  console.log('entró')
-  return res.status(200).json(req.usuario)
-}
+// const checkSession = async (req, res, next) => {
+//   console.log('entró')
+//   return res.status(200).json(req.usuario)
+// }
 
 module.exports = {
   getUsuarios,
   getUsuariosbyId,
   register,
   login,
-  updateUsuarios,
-  checkSession
+  updateUsuarios
 }

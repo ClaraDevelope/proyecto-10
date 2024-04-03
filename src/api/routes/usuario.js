@@ -7,12 +7,11 @@ const {
   register,
   login,
   updateUsuarios,
-  getUsuariosbyId,
-  checkSession
+  getUsuariosbyId
 } = require('../controllers/usuario')
 
 const userRouter = require('express').Router()
-userRouter.get('/checkSession', isAuth, checkSession)
+// userRouter.get('/checkSession', isAuth, checkSession)
 userRouter.get('/', isAuth, getUsuarios)
 userRouter.get('/:id', isAuth, getUsuariosbyId)
 userRouter.post('/:id/create', isAuth, uploadEvento, postEvento)
