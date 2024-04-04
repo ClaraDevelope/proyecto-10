@@ -78,7 +78,6 @@ const updateUsuarios = async (req, res, next) => {
 
     const newUsuarioData = { ...req.body, _id: id }
 
-    // Si hay una nueva imagen en la petición, eliminar la imagen antigua
     if (req.file) {
       if (antiguoUsuario.img) {
         deleteImgCloudinary(antiguoUsuario.img)
