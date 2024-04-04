@@ -67,6 +67,8 @@ const login = async (req, res, next) => {
   }
 }
 
+const bcrypt = require('bcryptjs')
+
 const updateUsuarios = async (req, res, next) => {
   try {
     const { id } = req.params
@@ -77,6 +79,12 @@ const updateUsuarios = async (req, res, next) => {
     }
 
     const newUsuarioData = { ...req.body, _id: id }
+
+    if (req.body.password) {
+      // Si se proporciona una nueva contraseña, hacer hash con bcrypt
+      const hashedPassword = bcrypt.hashSync(req.body.password, 10)
+      newUsuarioData.password = hashedPassword
+    }
 
     if (req.file) {
       if (antiguoUsuario.img) {
