@@ -5,14 +5,14 @@ const { verificarLlave } = require('../utils/jwt')
 const verificarToken = async (req, res, next) => {
   try {
     const token = req.headers.authorization
-    const parsedToken = token.replace('Bearer ', '')
+    if (!token || !token.startsWith('Bearer ')) {
+      return res.status(401).json('No se proporcionó un token de autorización')
+    }
+    const parsedToken = token.substring(7)
 
     const { id } = verificarLlave(parsedToken)
     const usuario = await Usuario.findById(id)
-
-    if (!usuario) {
-      throw new Error('Usuario no encontrado')
-    }
+    usuario.password = null
 
     req.usuario = usuario
     next()
