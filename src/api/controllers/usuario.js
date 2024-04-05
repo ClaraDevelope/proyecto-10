@@ -72,8 +72,9 @@ const updateUsuarios = async (req, res, next) => {
     const { id } = req.params
 
     const antiguoUsuario = await Usuario.findById(id)
+
     if (!antiguoUsuario) {
-      return res.status(404).json('Usuario no encontrado')
+      return res.status(404).json({ error: 'Usuario no encontrado' })
     }
 
     const newUsuarioData = { ...req.body, _id: id }
@@ -82,28 +83,25 @@ const updateUsuarios = async (req, res, next) => {
       const hashedPassword = bcrypt.hashSync(req.body.password, 10)
       newUsuarioData.password = hashedPassword
     }
-
     if (req.file) {
       if (antiguoUsuario.img) {
         deleteImgCloudinary(antiguoUsuario.img)
       }
+
       newUsuarioData.img = req.file.path
     }
-
     const usuarioUpdated = await Usuario.findByIdAndUpdate(id, newUsuarioData, {
       new: true
     })
-
     if (!usuarioUpdated) {
       return res
         .status(404)
-        .json('No se encontró ningún usuario para actualizar')
+        .json({ error: 'No se encontró ningún usuario para actualizar' })
     }
-
     return res.status(200).json(usuarioUpdated)
   } catch (error) {
     console.error(error)
-    return res.status(400).json('Error al hacer update de los usuarios')
+    return res.status(500).json({ error: 'Error al actualizar el usuario' })
   }
 }
 
