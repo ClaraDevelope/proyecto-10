@@ -72,7 +72,7 @@ const updateUsuarios = async (req, res, next) => {
     const { id } = req.params
 
     const antiguoUsuario = await Usuario.findById(id)
-
+    console.log(antiguoUsuario)
     if (!antiguoUsuario) {
       return res.status(404).json({ error: 'Usuario no encontrado' })
     }
@@ -116,7 +116,7 @@ const updateUsuarios = async (req, res, next) => {
     return res.status(200).json(usuarioUpdated)
   } catch (error) {
     console.error(error)
-    return res.status(500).json({ error: 'Error al actualizar el usuario' })
+    return res.status(400).json({ error: 'Error al actualizar el usuario' })
   }
 }
 
