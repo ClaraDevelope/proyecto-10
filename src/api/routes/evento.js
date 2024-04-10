@@ -11,7 +11,7 @@ const eventoRouter = require('express').Router()
 
 eventoRouter.get('/', getEventos)
 eventoRouter.get('/:id', getEventoById)
-eventoRouter.put(
+eventoRouter.patch(
   '/:id/auth/:userId',
   isAuth,
   isCreator,

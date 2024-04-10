@@ -53,29 +53,42 @@ const updateEvento = async (req, res, next) => {
   try {
     const { id } = req.params
     const antiguoEvento = await Evento.findById(id)
+
     if (!antiguoEvento) {
       return res
         .status(404)
         .json({ error: 'No se encontró el evento para actualizar' })
     }
 
-    const eventoActualizado = await Evento.findByIdAndUpdate(id, req.body, {
-      new: true
-    })
-
-    if (!eventoActualizado) {
-      return res
-        .status(404)
-        .json({ error: 'No se encontró el evento actualizado' })
-    }
     if (req.file) {
       if (antiguoEvento.cartel) {
         deleteImgCloudinary(antiguoEvento.cartel)
       }
-
-      eventoActualizado.cartel = req.file.path
-      await eventoActualizado.save()
+      antiguoEvento.cartel = req.file.path
     }
+
+    if (req.body.titulo) {
+      antiguoEvento.titulo = req.body.titulo
+    }
+
+    if (req.body.fecha) {
+      antiguoEvento.fecha = req.body.fecha
+    }
+
+    if (req.body.ubicacion) {
+      antiguoEvento.ubicacion = req.body.ubicacion
+    }
+
+    if (req.body.descripcion) {
+      antiguoEvento.descripcion = req.body.descripcion
+    }
+
+    if (req.body.precio) {
+      antiguoEvento.precio = req.body.precio
+    }
+
+    const eventoActualizado = await antiguoEvento.save()
+
     return res.status(200).json(eventoActualizado)
   } catch (error) {
     console.error(error)
