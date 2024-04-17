@@ -12,9 +12,9 @@ const {
 
 const userRouter = require('express').Router()
 userRouter.get('/', isAuth, getUsuarios)
-userRouter.patch('/:id', isAuth, uploadPerfil, updateUsuarios)
 userRouter.get('/:id', isAuth, getUsuariosbyId)
 userRouter.post('/:id/create', isAuth, uploadEvento, postEvento)
+userRouter.patch('/:id', isAuth, uploadPerfil, updateUsuarios)
 userRouter.post('/register', uploadPerfil, register)
 userRouter.post('/login', login)
 userRouter.post('/eventos/:eventoId/confirmar', isAuth, registroAsistencia)

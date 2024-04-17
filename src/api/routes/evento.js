@@ -10,7 +10,6 @@ const {
 const eventoRouter = require('express').Router()
 
 eventoRouter.get('/', getEventos)
-eventoRouter.get('/:id', getEventoById)
 eventoRouter.patch(
   '/:id/auth/:userId',
   isAuth,
@@ -18,6 +17,7 @@ eventoRouter.patch(
   uploadEvento,
   updateEvento
 )
+eventoRouter.get('/:id', getEventoById)
 eventoRouter.delete('/:id', isAuth, isCreator, deleteEvento)
 
 module.exports = { eventoRouter }
