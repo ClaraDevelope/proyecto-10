@@ -48,7 +48,6 @@ const postEvento = async (req, res, next) => {
     return res.status(400).json({ error: 'No se ha podido crear el evento' })
   }
 }
-
 const updateEvento = async (req, res, next) => {
   try {
     const { id } = req.params
@@ -59,29 +58,86 @@ const updateEvento = async (req, res, next) => {
         .json({ error: 'No se encontró el evento para actualizar' })
     }
 
-    const eventoActualizado = await Evento.findByIdAndUpdate(id, req.body, {
-      new: true
-    })
-    if (!eventoActualizado) {
-      return res
-        .status(404)
-        .json({ error: 'No se encontró el evento para actualizar' })
-        .json({ error: 'No se encontró el evento actualizado' })
+
+    const camposActualizados = {}
+
+    if (req.body.titulo) {
+      camposActualizados.titulo = req.body.titulo
+    }
+    if (req.body.fecha) {
+      camposActualizados.fecha = req.body.fecha
+    }
+    if (req.body.ubicacion) {
+      camposActualizados.ubicacion = req.body.ubicacion
+    }
+    if (req.body.descripcion) {
+      camposActualizados.descripcion = req.body.descripcion
+    }
+    if (req.body.precio) {
+      camposActualizados.precio = req.body.precio
     }
     if (req.file) {
       if (antiguoEvento.cartel) {
         deleteImgCloudinary(antiguoEvento.cartel)
       }
-
-      eventoActualizado.cartel = req.file.path
-      await eventoActualizado.save()
+      camposActualizados.cartel = req.file.path
     }
+
+
+    const eventoActualizado = await Evento.findByIdAndUpdate(
+      id,
+      camposActualizados,
+      {
+        new: true
+      }
+    )
+
+    if (!eventoActualizado) {
+      return res
+        .status(404)
+        .json({ error: 'No se encontró el evento para actualizar' })
+    }
+
     return res.status(200).json(eventoActualizado)
   } catch (error) {
     console.error(error)
     return res.status(500).json({ error: 'Error al actualizar el evento' })
   }
 }
+
+// const updateEvento = async (req, res, next) => {
+//   try {
+//     const { id } = req.params
+//     const antiguoEvento = await Evento.findById(id)
+//     if (!antiguoEvento) {
+//       return res
+//         .status(404)
+//         .json({ error: 'No se encontró el evento para actualizar' })
+//     }
+
+//     const eventoActualizado = await Evento.findByIdAndUpdate(id, req.body, {
+//       new: true
+//     })
+//     if (!eventoActualizado) {
+//       return res
+//         .status(404)
+//         .json({ error: 'No se encontró el evento para actualizar' })
+//         .json({ error: 'No se encontró el evento actualizado' })
+//     }
+//     if (req.file) {
+//       if (antiguoEvento.cartel) {
+//         deleteImgCloudinary(antiguoEvento.cartel)
+//       }
+
+//       eventoActualizado.cartel = req.file.path
+//       await eventoActualizado.save()
+//     }
+//     return res.status(200).json(eventoActualizado)
+//   } catch (error) {
+//     console.error(error)
+//     return res.status(500).json({ error: 'Error al actualizar el evento' })
+//   }
+// }
 
 const deleteEvento = async (req, res, next) => {
   try {

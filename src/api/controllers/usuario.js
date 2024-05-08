@@ -51,21 +51,48 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { nombreUsuario, password } = req.body
+
+    if (!nombreUsuario || typeof nombreUsuario !== 'string') {
+      return res.status(400).json({ error: 'Nombre de usuario no válido' })
+    }
     const usuario = await Usuario.findOne({ nombreUsuario })
+
     if (!usuario) {
-      return res.status(400).json({ error: 'no etá' })
+      return res.status(400).json({ error: 'Usuario no encontrado' })
     }
-    if (bcrypt.compareSync(password, usuario.password)) {
-      const token = generarLlave(usuario._id)
-      return res.status(200).json({ token, usuario })
-    } else {
-      return res.status(400).json({ error: 'Usuario o contraseña incorrectos' })
+
+    const contraseñaValida = bcrypt.compareSync(password, usuario.password)
+
+    if (!contraseñaValida) {
+      return res.status(400).json({ error: 'Contraseña incorrecta' })
     }
+
+    const token = generarLlave(usuario._id)
+    return res.status(200).json({ token, usuario })
   } catch (error) {
     console.error('Error en el login:', error)
     return res.status(500).json({ error: 'Error interno del servidor' })
   }
 }
+
+// const login = async (req, res, next) => {
+//   try {
+//     const { nombreUsuario, password } = req.body
+//     const usuario = await Usuario.findOne({ nombreUsuario })
+//     if (!usuario) {
+//       return res.status(400).json({ error: 'Usuario no encontrado' })
+//     }
+//     if (bcrypt.compareSync(password, usuario.password)) {
+//       const token = generarLlave(usuario._id)
+//       return res.status(200).json({ token, usuario })
+//     } else {
+//       return res.status(400).json({ error: 'Usuario o contraseña incorrectos' })
+//     }
+//   } catch (error) {
+//     console.error('Error en el login:', error)
+//     return res.status(500).json({ error: 'Error interno del servidor' })
+//   }
+// }
 
 const updateUsuarios = async (req, res, next) => {
   try {
