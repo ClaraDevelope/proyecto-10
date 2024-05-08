@@ -1,4 +1,4 @@
-const transporter = require('../../middlewares/nodemailer')
+const transporter = require('nodemailer')
 const Asistente = require('../models/asistente')
 const Evento = require('../models/evento')
 const Usuario = require('../models/usuario')
