@@ -1,4 +1,4 @@
-const transporter = require('nodemailer')
+const transporter = require('../../middlewares/nodemailer')
 const Asistente = require('../models/asistente')
 const Evento = require('../models/evento')
 const Usuario = require('../models/usuario')
@@ -69,7 +69,7 @@ const registroAsistencia = async (req, res, next) => {
         if (error) {
           console.error('Error al enviar el correo electrónico: ', error)
         } else {
-          console.log('Correo electrónico enviado.')
+          console.log('Correo electrónico enviado.', info.response)
         }
       })
 
