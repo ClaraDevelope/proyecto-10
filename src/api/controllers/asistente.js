@@ -68,6 +68,9 @@ const registroAsistencia = async (req, res, next) => {
       transporter.sendMail(mail, (error, info) => {
         if (error) {
           console.error('Error al enviar el correo electrónico: ', error)
+          return res
+            .status(500)
+            .json({ mensaje: 'Error al enviar el correo electrónico' })
         } else {
           console.log('Correo electrónico enviado.', info.response)
         }
