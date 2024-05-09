@@ -42,64 +42,52 @@ const registroAsistencia = async (req, res, next) => {
 
     let nuevoAsistente
 
-    try {
-      nuevoAsistente = new Asistente({ nombre, email, asistencia: eventoId })
-      await nuevoAsistente.save()
+    nuevoAsistente = new Asistente({ nombre, email, asistencia: eventoId })
+    await nuevoAsistente.save()
 
-      await Evento.findByIdAndUpdate(eventoId, {
-        $push: { asistentes: nuevoAsistente._id }
-      })
+    await Evento.findByIdAndUpdate(eventoId, {
+      $push: { asistentes: nuevoAsistente._id }
+    })
 
-      let mail = {
-        from: 'c3735861@gmail.com',
-        to: email,
-        subject: 'Confirmación de registro al evento',
-        text: `Hola ${nombre}, Gracias por registrarte para el evento.`,
-        html: `
-              <h5>Hola ${nombre},</h5>
-              <p>¡Gracias por unirte a nosotros para este emocionante evento! Estamos entusiasmados de tenerte con nosotros.</p>
-              <p>¡Prepárate para una jornada llena de diversión, aprendizaje y nuevas conexiones!</p>
-              <p>¡Esperamos verte pronto!</p>
-              <p>¡Saludos!</p>
-              <p>Clara</p>
-          `
-      }
-
-      transporter.sendMail(mail, (error, info) => {
-        if (error) {
-          console.error('Error al enviar el correo electrónico: ', error)
-          return res
-            .status(500)
-            .json({ mensaje: 'Error al enviar el correo electrónico' })
-        } else {
-          console.log('Correo electrónico enviado.', info.response)
-        }
-      })
-
-      if (req.usuario) {
-        await Evento.findByIdAndUpdate(eventoId, {
-          $push: { asistentes: req.usuario._id }
-        })
-      }
-      if (req.usuario) {
-        await Usuario.findByIdAndUpdate(req.usuario._id, {
-          $push: { eventosAsistencia: eventoId }
-        })
-      }
-    } catch (error) {
-      console.error(error)
-      return res
-        .status(500)
-        .json({ mensaje: 'Error al confirmar la asistencia' })
+    let mail = {
+      from: 'c3735861@gmail.com',
+      to: email,
+      subject: 'Confirmación de registro al evento',
+      text: `Hola ${nombre}, Gracias por registrarte para el evento.`,
+      html: `
+        <h5>Hola ${nombre},</h5>
+        <p>¡Gracias por unirte a nosotros para este emocionante evento! Estamos entusiasmados de tenerte con nosotros.</p>
+        <p>¡Prepárate para una jornada llena de diversión, aprendizaje y nuevas conexiones!</p>
+        <p>¡Esperamos verte pronto!</p>
+        <p>¡Saludos!</p>
+        <p>Clara</p>
+      `
     }
+
+    const info = await transporter.sendMail(mail)
+
+    console.log('Correo electrónico enviado.', info.response)
+
+    if (req.usuario) {
+      await Evento.findByIdAndUpdate(eventoId, {
+        $push: { asistentes: req.usuario._id }
+      })
+    }
+    if (req.usuario) {
+      await Usuario.findByIdAndUpdate(req.usuario._id, {
+        $push: { eventosAsistencia: eventoId }
+      })
+    }
+
     return res
       .status(200)
       .json({ mensaje: 'Asistencia confirmada con éxito', nuevoAsistente })
   } catch (error) {
-    console.error(error)
+    console.error('Error al confirmar la asistencia:', error)
     return res.status(500).json({ mensaje: 'Error al confirmar la asistencia' })
   }
 }
+
 // const registroAsistencia = async (req, res, next) => {
 //   try {
 //     const { nombre, email } = req.body
