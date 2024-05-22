@@ -7,7 +7,8 @@ const {
   register,
   login,
   updateUsuarios,
-  getUsuariosbyId
+  getUsuariosbyId,
+  registroAsistenciaUsuario
 } = require('../controllers/usuario')
 
 const userRouter = require('express').Router()
@@ -17,6 +18,10 @@ userRouter.post('/:id/create', isAuth, uploadEvento, postEvento)
 userRouter.patch('/:id', isAuth, uploadPerfil, updateUsuarios)
 userRouter.post('/register', uploadPerfil, register)
 userRouter.post('/login', login)
-userRouter.post('/eventos/:eventoId/confirmar', isAuth, registroAsistencia)
+userRouter.post(
+  '/eventos/:eventoId/confirmar',
+  isAuth,
+  registroAsistenciaUsuario
+)
 
 module.exports = { userRouter }

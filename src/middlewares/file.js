@@ -2,23 +2,21 @@ const multer = require('multer')
 const cloudinary = require('cloudinary').v2
 const { CloudinaryStorage } = require('multer-storage-cloudinary')
 
-const eventoStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'carteles-eventos',
-    allowedFormats: ['jpg', 'png', 'jpeg', 'gif', 'webP']
-  }
-})
+const createStorage = (folderName) => {
+  return new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: folderName,
+      allowedFormats: ['jpg', 'png', 'jpeg', 'gif', 'webP']
+    }
+  })
+}
 
-const perfilStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'imagenes-perfil',
-    allowedFormats: ['jpg', 'png', 'jpeg', 'gif', 'webP']
-  }
-})
+const upload = (storage) => {
+  return multer({ storage }).single('file')
+}
 
-const uploadEvento = multer({ storage: eventoStorage }).single('cartel')
-const uploadPerfil = multer({ storage: perfilStorage }).single('img')
+const uploadEvento = upload(createStorage('carteles-eventos'))
+const uploadPerfil = upload(createStorage('imagenes-perfil'))
 
 module.exports = { uploadEvento, uploadPerfil }

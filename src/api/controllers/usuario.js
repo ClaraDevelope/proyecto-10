@@ -2,6 +2,8 @@ const deleteImgCloudinary = require('../../utils/deleteFile')
 const { generarLlave } = require('../../utils/jwt')
 const Usuario = require('../models/usuario')
 const bcrypt = require('bcrypt')
+const { transporter } = require('../../utils/nodemailer')
+const Evento = require('../models/evento')
 const getUsuarios = async (req, res, next) => {
   try {
     const usuarios = await Usuario.find().populate('eventosOrganizados')
@@ -75,25 +77,6 @@ const login = async (req, res, next) => {
   }
 }
 
-// const login = async (req, res, next) => {
-//   try {
-//     const { nombreUsuario, password } = req.body
-//     const usuario = await Usuario.findOne({ nombreUsuario })
-//     if (!usuario) {
-//       return res.status(400).json({ error: 'Usuario no encontrado' })
-//     }
-//     if (bcrypt.compareSync(password, usuario.password)) {
-//       const token = generarLlave(usuario._id)
-//       return res.status(200).json({ token, usuario })
-//     } else {
-//       return res.status(400).json({ error: 'Usuario o contraseña incorrectos' })
-//     }
-//   } catch (error) {
-//     console.error('Error en el login:', error)
-//     return res.status(500).json({ error: 'Error interno del servidor' })
-//   }
-// }
-
 const updateUsuarios = async (req, res, next) => {
   try {
     const { id } = req.params
@@ -146,11 +129,58 @@ const updateUsuarios = async (req, res, next) => {
     return res.status(400).json({ error: 'Error al actualizar el usuario' })
   }
 }
+const registroAsistenciaUsuario = async (req, res, next) => {
+  try {
+    const { eventoId } = req.params
+    const { nombre, email } = req.body
+
+    const evento = await Evento.findById(eventoId)
+    if (!evento) {
+      return res.status(404).json({ error: 'El evento no existe' })
+    }
+
+    const usuario = await Usuario.findOne({ email })
+    if (!usuario) {
+      return res.status(404).json({ error: 'El usuario no existe' })
+    }
+    if (usuario.eventosAsistencia.includes(eventoId)) {
+      return res
+        .status(400)
+        .json({ error: 'El usuario ya está registrado para este evento' })
+    }
+
+    usuario.eventosAsistencia.push(eventoId)
+    await usuario.save()
+
+    const mail = {
+      from: 'c3735861@gmail.com',
+      to: email,
+      subject: 'Confirmación de registro al evento',
+      text: `Hola ${nombre}, Gracias por registrarte para el evento.`,
+      html: `
+        <h5>Hola ${nombre},</h5>
+        <p>¡Gracias por unirte a nosotros para este emocionante evento! Estamos entusiasmados de tenerte con nosotros.</p>
+        <p>¡Prepárate para una jornada llena de diversión, aprendizaje y nuevas conexiones!</p>
+        <p>¡Esperamos verte pronto!</p>
+        <p>¡Saludos!</p>
+        <p>Clara</p>
+      `
+    }
+
+    await transporter.sendMail(mail)
+
+    return res.status(200).json({ mensaje: 'Asistencia confirmada con éxito' })
+  } catch (error) {
+    console.error('Error al confirmar la asistencia:', error)
+    return res.status(500).json({ mensaje: 'Error al confirmar la asistencia' })
+  }
+}
 
 module.exports = {
   getUsuarios,
   getUsuariosbyId,
   register,
   login,
-  updateUsuarios
+  updateUsuarios,
+  registroAsistenciaUsuario
 }
