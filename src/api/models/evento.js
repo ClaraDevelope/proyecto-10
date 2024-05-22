@@ -14,12 +14,6 @@ const eventoSchema = new mongoose.Schema(
         ref: 'asistentes'
       }
     ],
-    asistentesUsuarios: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'usuarios'
-      }
-    ],
     creador: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'usuarios'

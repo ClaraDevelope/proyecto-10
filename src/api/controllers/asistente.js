@@ -68,16 +68,16 @@ const registroAsistencia = async (req, res, next) => {
 
     console.log('Correo electrónico enviado.', info.response)
 
-    // if (req.usuario) {
-    //   await Evento.findByIdAndUpdate(eventoId, {
-    //     $push: { asistentes: req.usuario._id }
-    //   })
-    // }
-    // if (req.usuario) {
-    //   await Usuario.findByIdAndUpdate(req.usuario._id, {
-    //     $push: { eventosAsistencia: eventoId }
-    //   })
-    // }
+    if (req.usuario) {
+      await Evento.findByIdAndUpdate(eventoId, {
+        $push: { asistentes: req.usuario._id }
+      })
+    }
+    if (req.usuario) {
+      await Usuario.findByIdAndUpdate(req.usuario._id, {
+        $push: { eventosAsistencia: eventoId }
+      })
+    }
 
     return res
       .status(200)
