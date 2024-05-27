@@ -48,6 +48,7 @@ const postEvento = async (req, res, next) => {
     return res.status(400).json({ error: 'No se ha podido crear el evento' })
   }
 }
+
 const updateEvento = async (req, res, next) => {
   try {
     const { id } = req.params
@@ -58,13 +59,22 @@ const updateEvento = async (req, res, next) => {
         .json({ error: 'No se encontró el evento para actualizar' })
     }
 
-    const camposActualizados = {
-      titulo: req.body.titulo,
-      fecha: req.body.fecha,
-      ubicacion: req.body.ubicacion,
-      descripcion: req.body.descripcion,
-      precio: req.body.precio
-    }
+    const camposActualizados = {}
+
+    Object.assign(camposActualizados, antiguoEvento.toObject())
+
+    const camposSolicitud = [
+      'titulo',
+      'fecha',
+      'ubicacion',
+      'descripcion',
+      'precio'
+    ]
+    camposSolicitud.forEach((campo) => {
+      if (req.body[campo]) {
+        camposActualizados[campo] = req.body[campo]
+      }
+    })
 
     if (req.file) {
       if (antiguoEvento.cartel) {

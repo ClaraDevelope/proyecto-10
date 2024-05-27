@@ -1,7 +1,7 @@
-const { transporter } = require('../../utils/nodemailer')
 const Asistente = require('../models/asistente')
 const Evento = require('../models/evento')
 const Usuario = require('../models/usuario')
+const transporter = require('../../utils/nodemailer')
 
 const getAsistentes = async (req, res, next) => {
   try {
